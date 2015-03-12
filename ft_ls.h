@@ -6,7 +6,7 @@
 /*   By: rroignan <rroignan@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2015/02/03 15:36:51 by rroignan          #+#    #+#             */
-/*   Updated: 2015/03/09 19:17:55 by rroignan         ###   ########.fr       */
+/*   Updated: 2015/03/12 16:51:24 by rroignan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,8 +28,26 @@
 
 typedef struct 			s_list
 {
-	char			*phr;
+	char			*name;
+	char			*group;
+	char			*mode;
+	int				nblink;
+	int				size;
+	char			*time;
+	char			*uid;
+}
+
+	
 	struct s_list	*next;
 }						t_list;
+
+typedes struct		f_list
+{
+	int		a;
+	int		r;
+	int		R;
+	int		l;
+	int		t;
+}					flag_l;
 
 #endif
