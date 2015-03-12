@@ -6,17 +6,11 @@
 /*   By: rroignan <rroignan@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2015/02/10 17:17:47 by rroignan          #+#    #+#             */
-/*   Updated: 2015/02/24 19:28:12 by rroignan         ###   ########.fr       */
+/*   Updated: 2015/03/12 16:47:58 by rroignan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <sys/stat.h>
-#include <sys/types.h>
-#include <time.h>
-#include <pwd.h>
-#include <uuid/uuid.h>
-#include <grp.h>
-#include "libft.h"
+#include "ft_ls.h"
 
 void				lsymb(char *arg)
 {
@@ -90,29 +84,23 @@ static char			*ft_ri(char *str, mode_t buf)
 	return (str);
 }
 
-int					main(int ac, char **av)
+t_list				*ft_stat(t_list *list)
 {
 	char			*ri;
 	struct stat		buf;
-	struct passwd	*name;
+	struct passwd	*uid;
 	struct group	*grp;
 
 	ri = ft_strnew(11);
-	if (ac == 2)
-	{
-		lstat(av[1], &buf);
-		name = getpwuid(buf.st_uid);
-		grp = getgrgid(buf.st_gid);
-		ft_putstr_ls(ft_ri(ri, buf.st_mode));
-		ft_putnbr(buf.st_nlink);
-		ft_putstr(" ");
-		ft_putstr_ls(name->pw_name);
-		ft_putstr_ls(grp->gr_name);
-		ft_putnbr(buf.st_size);
-		ft_putstr(" ");
-		ft_putstr(ft_adjust(ctime(&(buf.st_mtimespec.tv_sec))));
-		ft_putstr(" ");
-		(ft_ri(ri, buf.st_mode)[0] == 'l' ? lsymb(av[1]) : ft_putendl(av[1]));
-	}
+	lstat(list->name, &buf);
+	uid = getpwuid(buf.st_uid);
+	grp = getgrgid(buf.st_gid);
+	list->mode = ft_ri(ri, buf.st_mode);
+	list->nblink = buf.st_nlink;
+	list->uid = uid->pw_name;
+	list->group = (grp->gr_name);
+	list.size = buf.st_size;
+	list->time = ft_adjust(ctime(&(buf.st_mtimespec.tv_sec)));
+	(ft_ri(ri, buf.st_mode)[0] == 'l' ? lsymb(av[1]) : ft_putendl(av[1]));
 	return (0);
 }
