@@ -6,7 +6,7 @@
 /*   By: rroignan <rroignan@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2015/02/24 21:18:06 by rroignan          #+#    #+#             */
-/*   Updated: 2015/03/12 16:47:56 by rroignan         ###   ########.fr       */
+/*   Updated: 2015/03/12 16:56:02 by rroignan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,14 @@
 
 void	print_l(t_list *list)
 {
-	
+	ft_stat(list);
+	ft_putstr(list->group);
+	ft_putstr(list->mode);
+	ft_putnbr(list.nblink);
+	ft_putnbr(list.size);
+	ft_putstr(list->time);
+	ft_putstr(list->uid);
+}
 
 void	print_list(t_list *list, char *arg)
 {
