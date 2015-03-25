@@ -6,7 +6,7 @@
 /*   By: rroignan <rroignan@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2015/02/24 21:18:06 by rroignan          #+#    #+#             */
-/*   Updated: 2015/03/20 19:07:20 by rroignan         ###   ########.fr       */
+/*   Updated: 2015/03/25 18:55:51 by rroignan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,40 +81,46 @@ t_list	*add_link(t_list *list, char *str)
 	}
 }
 
-char	**fill_tab(char **av)
+/*char	**fill_tab(char **av)
 {
 	int		i;
 	int		r;
 	int		f;
 	char	**tab;
 
-	i = 0;
+	i = 1;
 	r = 0;
 	f = 1;
-	while (av[i] && av[i + 1][0] == '-')
+	while (av[i] && av[i][0] == '-' && && av[i + 1][0] == '-')
 		i++;
 	if ((tab = (char **)malloc(sizeof(char *) * (i + 1))) == NULL)
 		return (NULL);
 	i = 0;
-	while (av[f][0] == '-')
+	while (av[f] && av[f][0] == '-')
 	{
 		tab[r] = ft_strnew(ft_strlen(av[f]));
 		ft_strcpy(tab[r], av[f]);
 		r++;
 		f++;
 	}
-	tab[r] = '\0';
+	tab[r] = NULL;
 	return (tab);
-}
+}*/
 
 int		main(int ac, char **av)
 {
-	flag_l	*flag;
-	char 	**tab;
-	int		r;
+	if (ac >= 2)
+	{
+		flag_l	*flag;
 
-	tab = fill_tab(av);
-	flag = ft_check_f(tab);
+		flag = ft_check_f(av + 1);
+		ft_putnbr(flag->a);
+		ft_putnbr(flag->r);
+		ft_putnbr(flag->R);
+		ft_putnbr(flag->l);
+		ft_putnbr(flag->t);
+		ft_putnbr(flag->dm);
+	}
 	/*struct dirent	*library;
 	DIR				*dirp;
 	t_list			*list;
@@ -131,6 +137,5 @@ int		main(int ac, char **av)
 		list = add_link(list, library->d_name);
 	(list != NULL ? print_list(list, av[1]) : list);
 	closedir(dirp);*/
-	ac = ac;
 	return (0);
 }
