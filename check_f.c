@@ -6,11 +6,19 @@
 /*   By: rroignan <rroignan@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2015/03/17 12:42:41 by rroignan          #+#    #+#             */
-/*   Updated: 2015/03/25 18:55:49 by rroignan         ###   ########.fr       */
+/*   Updated: 2015/03/26 14:22:46 by rroignan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_ls.h"
+
+void	error_msg(char c)
+{
+	ft_putstr_fd("ft_ls: illegal option -- ", 2);
+	ft_putchar_fd(c, 2);
+	ft_putstr_fd("\nusage: ./ft_ls [-Ralrt] [file ...]\n", 2);
+	exit(1);
+}
 
 void	idk(char c, flag_l *list)
 {
@@ -26,13 +34,8 @@ void	idk(char c, flag_l *list)
 		list->t = 1;
 	else if (c == '-')
 		list->dm = 1;
-	else if (!ft_strchr(FLAG, c))
-	{
-		ft_putstr_fd("ft_ls: illegal option -- ", 2);
-		ft_putchar_fd(c, 2);
-		ft_putstr_fd("\nusage: ./ft_ls [-Ralrt] [file ...]\n", 2);
-		exit(1);
-	}
+	else if (!ft_strchr(FLAG, c) && list->dm == 0)
+		error_msg(c);
 }
 
 flag_l	*ft_check_f(char **arg)
@@ -48,8 +51,10 @@ flag_l	*ft_check_f(char **arg)
 	ft_bzero((void *)tab, sizeof(flag_l));
 	while (arg[r])
 	{
-		while (arg[r] && arg[r][c])
+		while (arg[r] && arg[r][c] && arg[r][0] == '-')
 		{
+			if (arg[r][c + 1] && arg[r][c] == '-' && tab->dm == 0)
+				error_msg('-');
 			idk(arg[r][c], tab);
 			c++;
 		}

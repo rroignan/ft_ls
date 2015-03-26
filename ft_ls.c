@@ -6,7 +6,7 @@
 /*   By: rroignan <rroignan@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2015/02/24 21:18:06 by rroignan          #+#    #+#             */
-/*   Updated: 2015/03/25 18:55:51 by rroignan         ###   ########.fr       */
+/*   Updated: 2015/03/26 19:54:46 by rroignan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,27 +14,36 @@
 
 void	print_l(t_list *list)
 {
-	//ft_stat(list);
-	ft_putstr(list->mode);
-	ft_putstr("  ");
-	ft_putnbr(list->nblink);
-	ft_putstr(" ");
-	ft_putstr(list->uid);
-	ft_putstr(" ");
-	ft_putstr(list->group);
-	ft_putstr(" ");
-	ft_putnbr(list->size);
-	ft_putstr(" ");
-	ft_putstr(list->time);
-	ft_putstr(" ");
-	ft_putendl(list->name);
+	while (list)
+	{
+		/*if (list->name[0] == '.')
+			list = list->next;
+		else*/
+		{
+			ft_stat(list);
+			ft_putstr(list->mode);
+			ft_putstr("  ");
+			ft_putnbr(list->nblink);
+			ft_putstr(" ");
+			ft_putstr(list->uid);	
+			ft_putstr(" ");
+			ft_putstr(list->group);
+			ft_putstr(" ");
+			ft_putnbr(list->size);
+			ft_putstr(" ");
+			ft_putstr(list->time);
+			ft_putstr(" ");
+			ft_putendl(list->name);
+			list = list->next;
+		}
+	}
 }
 
-void	print_list(t_list *list, char *arg)
+void	print_list(t_list *list, flag_l *flag)
 {
-	if (ft_strncmp(arg, "-l", 2) == 0 && arg)
+	if (flag->l == 1)
 		print_l(list);
-	else if (ft_strncmp(arg, "-a", 2) == 0 && arg)
+	else if (flag->a == 1)
 	{
 		while (list)
 		{
@@ -63,10 +72,10 @@ t_list	*add_link(t_list *list, char *str)
 	t_list	*temp;
 
 	tmp = malloc(sizeof(t_list));
+	ft_bzero(tmp, sizeof(t_list));
 	if (tmp)
 	{
-		tmp->name = str;
-		ft_stat(tmp);
+		tmp->name = ft_strdup(str);
 		tmp->next = NULL;
 	}
 	if (list == NULL)
@@ -81,61 +90,72 @@ t_list	*add_link(t_list *list, char *str)
 	}
 }
 
-/*char	**fill_tab(char **av)
-{
-	int		i;
-	int		r;
-	int		f;
-	char	**tab;
-
-	i = 1;
-	r = 0;
-	f = 1;
-	while (av[i] && av[i][0] == '-' && && av[i + 1][0] == '-')
-		i++;
-	if ((tab = (char **)malloc(sizeof(char *) * (i + 1))) == NULL)
-		return (NULL);
-	i = 0;
-	while (av[f] && av[f][0] == '-')
-	{
-		tab[r] = ft_strnew(ft_strlen(av[f]));
-		ft_strcpy(tab[r], av[f]);
-		r++;
-		f++;
-	}
-	tab[r] = NULL;
-	return (tab);
-}*/
-
 int		main(int ac, char **av)
 {
-	if (ac >= 2)
-	{
-		flag_l	*flag;
-
-		flag = ft_check_f(av + 1);
-		ft_putnbr(flag->a);
-		ft_putnbr(flag->r);
-		ft_putnbr(flag->R);
-		ft_putnbr(flag->l);
-		ft_putnbr(flag->t);
-		ft_putnbr(flag->dm);
-	}
-	/*struct dirent	*library;
+	flag_l			*flag;
+	struct dirent	*library;
 	DIR				*dirp;
+	int				r;
 	t_list			*list;
 
-	list = NULL;
-	ac = ac;
-	dirp = opendir(av[2]);
-	if (dirp == NULL)
+	if (ac >= 2)
 	{
-		ft_putendl(av[1]);
-		return (0);
-	}		
-	while ((library = readdir(dirp)) != NULL)
-		list = add_link(list, library->d_name);
-	(list != NULL ? print_list(list, av[1]) : list);
-	closedir(dirp);*/
+
+		flag = ft_check_f(av + 1);
+		r = 1;
+		if (flag->dm == 1)
+		{
+			list = NULL;
+			while (av[r][1] != '-')
+				r++;
+			r++;
+			while (av[r])
+			{
+				dirp = opendir(av[r]);
+				if (dirp == NULL)
+					list = add_link(list, av[r]);
+				else
+				{
+					while ((library = readdir(dirp)) != NULL)
+						list = add_link(list, library->d_name);
+				}
+				r++;
+			}
+			(list != NULL ? print_list(list, flag) : list);
+			closedir(dirp);
+		}
+		else
+		{
+			list = NULL;
+			while (av[r][0] == '-')
+				r++;
+			while (av[r])
+			{
+				dirp = opendir(av[r]);
+				if (dirp == NULL)
+					list = add_link(list, av[r]);
+				else
+				{
+					while ((library = readdir(dirp)) != NULL)
+						list = add_link(list, library->d_name);
+				}
+				r++;
+			}
+			(list != NULL ? print_list(list, flag) : list);
+			closedir(dirp);
+		}
+	}
+		/*dirp = opendir(".");
+		if (dirp == NULL)
+		{
+			ft_putendl(av[r]);
+			return (0);
+		}
+		while ((library = readdir(dirp)) != NULL)
+			list = add_link(list, library->d_name);
+		(list != NULL ? print_list(list, av[1]) : list);
+		closedir(dirp);
+	}*/
 	return (0);
 }
+

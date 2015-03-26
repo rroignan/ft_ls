@@ -6,7 +6,7 @@
 /*   By: rroignan <rroignan@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2015/02/10 17:17:47 by rroignan          #+#    #+#             */
-/*   Updated: 2015/03/12 16:47:58 by rroignan         ###   ########.fr       */
+/*   Updated: 2015/03/26 19:54:59 by rroignan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -97,10 +97,10 @@ t_list				*ft_stat(t_list *list)
 	grp = getgrgid(buf.st_gid);
 	list->mode = ft_ri(ri, buf.st_mode);
 	list->nblink = buf.st_nlink;
-	list->uid = uid->pw_name;
-	list->group = (grp->gr_name);
-	list.size = buf.st_size;
+	list->uid = ft_strdup(uid->pw_name);
+	list->group = ft_strdup(grp->gr_name);
+	list->size = buf.st_size;
 	list->time = ft_adjust(ctime(&(buf.st_mtimespec.tv_sec)));
-	(ft_ri(ri, buf.st_mode)[0] == 'l' ? lsymb(av[1]) : ft_putendl(av[1]));
+	//(ft_ri(ri, buf.st_mode)[0] == 'l' ? lsymb(av[1]) : ft_putendl(av[1]));
 	return (0);
 }
