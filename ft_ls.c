@@ -6,13 +6,13 @@
 /*   By: rroignan <rroignan@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2015/02/24 21:18:06 by rroignan          #+#    #+#             */
-/*   Updated: 2015/04/10 19:55:19 by rroignan         ###   ########.fr       */
+/*   Updated: 2015/04/11 23:07:13 by rroignan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_ls.h"
 
-void	ft_lineup(t_list *list, lineup *length)
+void	ft_lineup(t_list *list, t_lineup *length)
 {
 	if (ft_strlen(ft_itoa(list->nblink)) > length->nblink)
 		length->nblink = ft_strlen(ft_itoa(list->nblink));
@@ -89,7 +89,7 @@ void	ft_putspc(char *str, size_t l)
 }
 
 
-void	print_l(t_list *list, lineup *length)
+void	print_l(t_list *list, t_lineup *length)
 {
 	char	*spc;
 	int		i;
@@ -107,7 +107,7 @@ void	print_l(t_list *list, lineup *length)
 		else
 		{
 			ft_putstr(list->mode);
-			ft_putstr("  ");
+			ft_putstr(" ");
 				ft_putnbrsp(list->nblink, length->nblink);
 			ft_putstr(" ");
 				ft_putspc(list->uid, length->uid);
@@ -124,7 +124,7 @@ void	print_l(t_list *list, lineup *length)
 	}
 }
 
-void	print_list(t_list *list, flag_l *flag, lineup *length)
+void	print_list(t_list *list, t_flag *flag, t_lineup *length)
 {
 	if (flag->l == 1)
 		print_l(list, length);
@@ -151,21 +151,85 @@ void	print_list(t_list *list, flag_l *flag, lineup *length)
 	}
 }
 
-t_list	*add_link(t_list *list, flag_l *flag, char *folder, char *file, lineup *length)
+/*void	ft_swaplist(t_list *new, t_list *with, t_list **list)
 {
-	t_list	*tmp;
+	t_list *previous;
+	t_list	*temp;
+	
+	temp = *list;
+	if (*list == new)
+	{
+		new->next = with->next;
+		with->next = new;
+		list = &new;
+	}
+	else
+	{
+		while (temp->next && temp->next != new)
+			temp = temp->next;
+		previous = temp;
+		new->next = with->next;
+		with->next = new;
+		previous->next = with;
+	}
+}*/
+
+t_list	*add_link(t_list *list, t_flag *flag, char *folder, char *file, t_lineup *length)
+{
+	t_list	*new;
 	t_list	*temp;
 
-	tmp = malloc(sizeof(t_list));
-	ft_bzero(tmp, sizeof(t_list));
-	if (tmp)
+	new = malloc(sizeof(t_list));
+	ft_bzero(new, sizeof(t_list));
+	if (new)
 	{
-		tmp->folder = ft_strdup(folder);
-		tmp->file = ft_strdup(file);
-		tmp->path = ft_strjoin(ft_strjoin(tmp->folder, "/"), tmp->file);
-		ft_stat(tmp);
-		ft_lineup(tmp, length);
-		if (flag->r == 1)
+		new->folder = ft_strdup(folder);
+		new->file = ft_strdup(file);
+		new->path = ft_strjoin(ft_strjoin(new->folder, "/"), new->file);
+		ft_stat(new);
+		ft_lineup(new, length);
+		new->next = NULL;
+		if (list == NULL)
+			return (new);
+		temp = list;
+		while (temp && temp->next)
+		{
+			if (ft_strcmp(new->file, temp->file) == 1 && ft_strcmp(new->file, temp->next->file) == -1)
+			{
+				new->next = temp->next;
+				temp->next = new;
+				return (list);
+			}
+			else if (ft_strcmp(new->file, temp->file) == 1 && ft_strcmp(new->file, temp->next->file) == 1)
+				temp = temp->next;
+			else if (ft_strcmp(new->file, temp->file) == -1)
+			{
+				new->next = temp;
+				list = new;
+				return (list);
+			}
+		}
+		temp->next = new;
+		(void)flag;
+	}
+		return (list);
+		/*new->next = list;
+		list = new;
+		temp = list;
+		while (temp->next)
+		{
+			if (ft_strcmp(temp->file, temp->next->file) > 0)
+			{
+				ft_swaplist(temp, temp->next, &list);
+				temp = list;
+			}
+			else
+				temp = temp->next;
+		}
+		(void)flag;
+	}
+			return (list);*/ 
+		/*if (flag->r == 1)
 			tmp->next = list;
 		else
 			tmp->next = NULL;
@@ -179,20 +243,20 @@ t_list	*add_link(t_list *list, flag_l *flag, char *folder, char *file, lineup *l
 			temp = temp->next;
 		temp->next = tmp;
 		return (list);
-	}
+	}*/
 }
 
-void	ft_ls(char *str, flag_l *flag)
+void	ft_ls(char *str, t_flag *flag)
 {
 	struct dirent	*library;
 	DIR				*dirp;
 	t_list			*list;
-	lineup			*length;
+	t_lineup			*length;
 
 	list = NULL;
 	dirp = opendir(str);
-	length = malloc(sizeof(lineup));
-	ft_bzero(length, sizeof(lineup));
+	length = malloc(sizeof(t_lineup));
+	ft_bzero(length, sizeof(t_lineup));
 	if (dirp == NULL)
 	{
 		list = add_link(list, flag, str, str, length);
@@ -212,7 +276,7 @@ void	ft_ls(char *str, flag_l *flag)
 
 int		main(int ac, char **av)
 {
-	flag_l			*flag;
+	t_flag			*flag;
 	int				r;
 
 	r = 1;
