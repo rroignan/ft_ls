@@ -6,7 +6,7 @@
 /*   By: rroignan <rroignan@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2015/02/03 15:36:51 by rroignan          #+#    #+#             */
-/*   Updated: 2015/04/10 20:04:36 by rroignan         ###   ########.fr       */
+/*   Updated: 2015/04/21 21:17:04 by rroignan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,11 +38,12 @@ typedef struct 			s_list
 	int				nblink;
 	int				size;
 	char			*time;
+	const time_t	*clock;
 	char			*uid;
 	struct s_list	*next;
 }						t_list;
 
-typedef struct		f_list
+typedef struct			s_flag
 {
 	int		a;
 	int		r;
@@ -50,18 +51,67 @@ typedef struct		f_list
 	int		l;
 	int		t;
 	int		dm;
-}					flag_l;
+}						t_flag;
 
-typedef struct		l_list
+typedef struct			s_file
+{
+	char			*folder;
+	char			*file;
+	char			*path;
+	int				blocks;
+	char			*group;
+	char			*mode;
+	int				nblink;
+	int				size;
+	char			*time;
+	const time_t	*clock;
+	char			*uid;
+	struct s_file	*next;
+}						t_file;
+
+typedef struct			s_folder
+{
+	char			*folder;
+	char			*file;
+	char			*path;
+	int				blocks;
+	char			*group;
+	char			*mode;
+	int				nblink;
+	int				size;
+	char			*time;
+	const time_t	*clock;
+	char			*uid;
+	struct s_folder	*next;
+}						t_folder;	
+
+typedef struct			s_err
+{
+	char			*folder;
+	char			*file;
+	char			*path;
+	int				blocks;
+	char			*group;
+	char			*mode;
+	int				nblink;
+	int				size;
+	char			*time;
+	const time_t	*clock;
+	char			*uid;
+	struct s_err	*next;
+}						t_err;
+
+typedef struct		s_lineup
 {
 	size_t		nblink;
 	size_t		uid;
 	size_t		group;
 	size_t		size;
 	size_t		time;
-}					lineup;
+}					t_lineup;
 
-void	ft_stat(t_list *list);
-flag_l	*ft_check_f(char **arg);
+void	ft_stat(t_list *list, t_flag *flag);
+t_flag	*ft_check_f(char **arg);
+char	**ft_otherarg(char **arg, t_arg *stru);
 
 #endif

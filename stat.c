@@ -6,22 +6,12 @@
 /*   By: rroignan <rroignan@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2015/02/10 17:17:47 by rroignan          #+#    #+#             */
-/*   Updated: 2015/04/10 20:16:56 by rroignan         ###   ########.fr       */
+/*   Updated: 2015/04/25 18:42:24 by rroignan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_ls.h"
 
-/*void				lsymb(char *arg)
-{
-	char			*symb;
-
-	symb = ft_strnew(256);
-	readlink(arg, symb, 256);
-	ft_putstr(arg);
-	ft_putstr(" -> ");
-	ft_putendl(symb);
-}*/
 
 char				*ft_adjust(char *time, int old)
 {
@@ -110,7 +100,17 @@ static char			*ft_ri(char *str, mode_t buf)
 	return (str);
 }
 
-void				ft_stat(t_list *list)
+char				*ft_lsymb(char *arg)
+{
+	char			*symb;
+
+	symb = ft_strnew(256);
+	readlink(arg, symb, 256);
+	arg = ft_strjoin(arg, ft_strjoin(" -> ", symb));
+	return (arg);
+}
+
+void				ft_stat(char *list, t_flag *flag)
 {
 	char			*ri;
 	struct stat		buf;
@@ -122,10 +122,13 @@ void				ft_stat(t_list *list)
 	uid = getpwuid(buf.st_uid);
 	grp = getgrgid(buf.st_gid);
 	list->mode = ft_ri(ri, buf.st_mode);
+	if (ri[0] == 'l' && flag->l == 1)
+		list->file = ft_lsymb(list->file);
 	list->nblink = buf.st_nlink;
 	list->uid = ft_strdup(uid->pw_name);
 	list->group = ft_strdup(grp->gr_name);
 	list->size = (int)buf.st_size;
 	list->time = ft_time(buf);
+	list->clock = &(buf.st_mtimespec.tv_sec);
 	list->blocks = buf.st_blocks;
 }

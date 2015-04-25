@@ -6,7 +6,7 @@
 /*   By: rroignan <rroignan@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2015/02/24 21:18:06 by rroignan          #+#    #+#             */
-/*   Updated: 2015/04/11 23:07:13 by rroignan         ###   ########.fr       */
+/*   Updated: 2015/04/25 18:42:27 by rroignan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,28 +24,22 @@ void	ft_lineup(t_list *list, t_lineup *length)
 		length->size = ft_strlen(ft_itoa(list->size));
 	if (ft_strlen(list->time) > length->time)
 		length->time = ft_strlen(list->time);
-	/*length->size = 51252;
-	length->nblink = 12;
-	length->time = "ok mois je suis bo";
-	length->group ="2014_paris       ldfgkjdfgjdfgdsjhg ";
-	length->uid = "rroignan";
-	(void)list;*/
 }
 
-int		count_blck(t_list *list)
+int		count_blck(t_list *list, t_flag *flag)
 {
 	int		bl;
 
 	bl = 0;
+	if (flag->a == 0)
+	{	
+		while (list && list->file[0] == '.')
+			list = list->next;
+	}
 	while (list)
 	{
-		if (list->file[0] == '.')
-			list = list->next;
-		else
-		{
 			bl += list->blocks;
 			list = list->next;
-		}
 	}
 	return (bl);
 }
@@ -77,49 +71,75 @@ void	ft_putspc(char *str, size_t l)
 	if (ft_strlen(str) < l)
 	{
 		i = l - ft_strlen(str);
+		ft_putstr(str);
 		while (i != 0)
 		{
 			ft_putchar(' ');
 			i--;
 		}
-		ft_putstr(str);
 	}
 	else if (ft_strlen(str) == l)
-			ft_putstr(str);
+		ft_putstr(str);
 }
 
 
-void	print_l(t_list *list, t_lineup *length)
+void	print_l(t_list *list, t_lineup *length, t_flag *flag)
 {
 	char	*spc;
 	int		i;
 
 	spc = NULL;
 	i = 0;
-	ft_putstr("total ");
-	ft_putnbr(count_blck(list));
-	ft_putchar('\n');
-	(void)length;
-	while (list)
+	if (list->next)
 	{
-		if (list->file[0] == '.')
-			list = list->next;
-		else
+		ft_putstr("total ");
+		ft_putnbr(count_blck(list, flag));
+		ft_putchar('\n');
+	}
+	(void)length;
+	if (flag->a == 1)
+	{
+		while (list)
 		{
 			ft_putstr(list->mode);
 			ft_putstr(" ");
-				ft_putnbrsp(list->nblink, length->nblink);
+			ft_putnbrsp(list->nblink, length->nblink);
 			ft_putstr(" ");
-				ft_putspc(list->uid, length->uid);
+			ft_putspc(list->uid, length->uid);
 			ft_putstr("  ");
-				ft_putspc(list->group, length->group);
+			ft_putspc(list->group, length->group);
 			ft_putstr("  ");
-				ft_putnbrsp(list->size, length->size);
+			ft_putnbrsp(list->size, length->size);
 			ft_putstr(" ");
-				ft_putspc(list->time, length->time);
+			ft_putstr(list->time);
 			ft_putstr(" ");
 			ft_putendl(list->file);
 			list = list->next;
+		}
+	}
+	else
+	{
+		while (list)
+		{
+			if (list->file[0] == '.')
+				list = list->next;
+			else
+			{
+				ft_putstr(list->mode);
+				ft_putstr(" ");
+				ft_putnbrsp(list->nblink, length->nblink);
+				ft_putstr(" ");
+				ft_putspc(list->uid, length->uid);
+				ft_putstr("  ");
+				ft_putspc(list->group, length->group);
+				ft_putstr("  ");
+				ft_putnbrsp(list->size, length->size);
+				ft_putstr(" ");
+				ft_putspc(list->time, length->time);
+				ft_putstr(" ");
+				ft_putendl(list->file);
+				list = list->next;
+			}
 		}
 	}
 }
@@ -127,7 +147,7 @@ void	print_l(t_list *list, t_lineup *length)
 void	print_list(t_list *list, t_flag *flag, t_lineup *length)
 {
 	if (flag->l == 1)
-		print_l(list, length);
+		print_l(list, length, flag);
 	else if (flag->a == 1)
 	{
 		while (list)
@@ -136,7 +156,7 @@ void	print_list(t_list *list, t_flag *flag, t_lineup *length)
 			list = list->next;
 		}
 	}
-	else
+	else	
 	{
 		while (list)
 		{
@@ -151,29 +171,6 @@ void	print_list(t_list *list, t_flag *flag, t_lineup *length)
 	}
 }
 
-/*void	ft_swaplist(t_list *new, t_list *with, t_list **list)
-{
-	t_list *previous;
-	t_list	*temp;
-	
-	temp = *list;
-	if (*list == new)
-	{
-		new->next = with->next;
-		with->next = new;
-		list = &new;
-	}
-	else
-	{
-		while (temp->next && temp->next != new)
-			temp = temp->next;
-		previous = temp;
-		new->next = with->next;
-		with->next = new;
-		previous->next = with;
-	}
-}*/
-
 t_list	*add_link(t_list *list, t_flag *flag, char *folder, char *file, t_lineup *length)
 {
 	t_list	*new;
@@ -186,64 +183,56 @@ t_list	*add_link(t_list *list, t_flag *flag, char *folder, char *file, t_lineup 
 		new->folder = ft_strdup(folder);
 		new->file = ft_strdup(file);
 		new->path = ft_strjoin(ft_strjoin(new->folder, "/"), new->file);
-		ft_stat(new);
+		ft_stat(new, flag);
 		ft_lineup(new, length);
 		new->next = NULL;
 		if (list == NULL)
 			return (new);
 		temp = list;
-		while (temp && temp->next)
+		if (flag->r == 1)
 		{
-			if (ft_strcmp(new->file, temp->file) == 1 && ft_strcmp(new->file, temp->next->file) == -1)
+			while (temp && temp->next)
 			{
-				new->next = temp->next;
-				temp->next = new;
-				return (list);
+				if (ft_strcmp(new->file, temp->file) == -1 && ft_strcmp(new->file, temp->next->file) == 1)
+				{
+					new->next = temp->next;
+					temp->next = new;
+					return (list);
+				}
+				else if (ft_strcmp(new->file, temp->file) == -1 && ft_strcmp(new->file, temp->next->file) == -1)
+					temp = temp->next;
+				else if (ft_strcmp(new->file, temp->file) == 1)
+				{
+					new->next = temp;
+					list = new;
+					return (list);
+				}
 			}
-			else if (ft_strcmp(new->file, temp->file) == 1 && ft_strcmp(new->file, temp->next->file) == 1)
-				temp = temp->next;
-			else if (ft_strcmp(new->file, temp->file) == -1)
-			{
-				new->next = temp;
-				list = new;
-				return (list);
-			}
+			temp->next = new;
 		}
-		temp->next = new;
-		(void)flag;
-	}
-		return (list);
-		/*new->next = list;
-		list = new;
-		temp = list;
-		while (temp->next)
-		{
-			if (ft_strcmp(temp->file, temp->next->file) > 0)
-			{
-				ft_swaplist(temp, temp->next, &list);
-				temp = list;
-			}
-			else
-				temp = temp->next;
-		}
-		(void)flag;
-	}
-			return (list);*/ 
-		/*if (flag->r == 1)
-			tmp->next = list;
 		else
-			tmp->next = NULL;
+		{
+			while (temp && temp->next)
+			{
+				if (ft_strcmp(new->file, temp->file) == 1 && ft_strcmp(new->file, temp->next->file) == -1)
+				{
+					new->next = temp->next;
+					temp->next = new;
+					return (list);
+				}
+				else if (ft_strcmp(new->file, temp->file) == 1 && ft_strcmp(new->file, temp->next->file) == 1)
+					temp = temp->next;
+				else if (ft_strcmp(new->file, temp->file) == -1)
+				{
+					new->next = temp;
+					list = new;
+					return (list);
+				}
+			}
+			temp->next = new;
+		}
 	}
-	if (list == NULL || flag->r == 1)
-		return (tmp);
-	else
-	{
-		temp = list;
-		while (temp->next != NULL)
-			temp = temp->next;
-		temp->next = tmp;
-		return (list);
-	}*/
+	return (list);
 }
 
 void	ft_ls(char *str, t_flag *flag)
@@ -251,60 +240,95 @@ void	ft_ls(char *str, t_flag *flag)
 	struct dirent	*library;
 	DIR				*dirp;
 	t_list			*list;
-	t_lineup			*length;
+	t_lineup		*length;
 
 	list = NULL;
 	dirp = opendir(str);
 	length = malloc(sizeof(t_lineup));
 	ft_bzero(length, sizeof(t_lineup));
 	if (dirp == NULL)
-	{
-		list = add_link(list, flag, str, str, length);
-		//ft_stat(list);
-		//ft_lineup(list, length);
-	}
+		list = add_link(list, flag, ".", str, length);
 	else
 	{
 		while ((library = readdir(dirp)) != NULL)
-		{
 			list = add_link(list, flag, str, library->d_name, length);
-		}
 	}
 	(list != NULL ? print_list(list, flag, length) : list);
-	closedir(dirp);
+	if (dirp)
+		closedir(dirp);
 }
 
 int		main(int ac, char **av)
 {
 	t_flag			*flag;
+	t_file			*file;
+	t_folder		*folder
+	t_err			*err;
 	int				r;
+	int				i;
 
 	r = 1;
+	i = 0;
 	flag = NULL;
-	if (ac >= 2)
+	file = NULL;
+	folder = NULL;
+	err = NULL;
+	flag = ft_check_f(av + 1);
+	while (av[r])
 	{
-		flag = ft_check_f(av + 1);
 		if (flag->dm == 1)
 		{
 			while (av[r][1] != '-')
 				r++;
-			r++;
-			while (av[r])
+			if (r + 1 == ac)
 			{
-				ft_ls(av[r], flag);
+				ft_ls(".", flag);
+				break;
+			}
+			else
+			{	
 				r++;
+				while (av[r])
+				{
+					ft_ls(av[r], flag);
+					r++;
+				}
 			}
 		}
 		else
 		{
-			while (av[r][0] == '-')
+			while (av[r] && av[r][0] == '-')
 				r++;
-			while (av[r])
+			if (r == ac)
+				ft_ls(".", flag);
+			else
 			{
-				ft_ls(av[r], flag);
-				r++;
+				i = r;
+				while (av[i])
+					i++;
+				while (av[r])
+				{
+					if (i - r - 1 >= 2)
+					{
+						ft_putendl(ft_strjoin(av[r], ":"));
+						ft_otherarg(av + r, file, folder, err, flag);
+						ft_ls(av[r], flag);
+						ft_putchar('\n');
+						r++;
+					}
+					else
+					{
+						ft_ls(av[r], flag);
+						r++;
+					}
+				}
 			}
 		}
+	}
+	if (ac < 2)
+	{
+		flag = ft_check_f(av + 1);
+		ft_ls(".", flag);
 	}
 	return (0);
 }
